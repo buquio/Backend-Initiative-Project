@@ -1,0 +1,35 @@
+
+[
+    {
+        "id": 1,
+        "username": "bukola",
+        "receiptNumber":  442,
+        "orderNumber": 44,
+        "movieTitle": "24",
+        "rentDate":"2/6/20",
+        "returnDate":"16/6/20"
+        },
+    
+    {
+        "id": 2,
+        "username": "toyin",
+        "receiptNumber":  330,
+        "orderNumber": 22,
+        "movieTitle":"Super Man",
+        "rentDate":"6/7/20",
+        "returnDate":"20/7/20"
+       },
+
+       {
+        "id": 3,
+        "username": "tunde",
+        "receiptNumber":  348,
+        "orderNumber": 32,
+        "movieTitle": "Bat Man",
+        "rentDate":"20/4/20",
+        "returnDate":"26/4/20"
+        }
+    ]
+
+
+
