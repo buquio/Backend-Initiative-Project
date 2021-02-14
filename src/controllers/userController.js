@@ -1,141 +1,119 @@
+const Users = require('../models/users');
+const { successResponse, errorResponse } = require( '../utils/response');
 
-let users = require('../database/users.json');
-
-
-const createUser = (req, res, next) => {
-  let index = users.length;
-
-    const user = {
-        // id: req.params.id, 
-      "id": index + 1,
-        username: req.body.username, 
-        password: req.body.password,
-        email: req.body.email
-
-    };
-    users.push(user);
-    res.status(201).send(users);
-};
+const createUser = async (req, res, next) => {
+  try {
+    const data = req.body;
+    const username = req.body.username
+    const email = req.body.email    
+    const user = await Users.findOne({username, email});
+    if (user) return errorResponse(res, 409, 'User already exists'); 
 
 
-
-const getUser = (req, res, next) => {
-    res.send(users);  
-};
-
-
-// const getUserByName = (req, res, next) => {
-//   const username = req.body.username; 
-//   const userName = users.filter(user => user.username === username);
-//   if(!userName) {
-//       return res.send("Username not found");
-//   }else {
-//   res.json(username);
-// }
-// };
-
-const getUserByName = (req, res, next) => {
-const {username}= req.body;
-    if (user.username !== username) return res.status(404).send(`User with  ${username} does not exist`);
-
-    for (var i = 0; i < users.length; i++) {
-      if(users[i].username == username){
-          return res.status(200).json({message:`User ${username} retrieved successfully`, users:users[i] })
-
-      }
+    const result = await Users.create(data);    
+    return successResponse(res, 201, 'User created successfully', result);
+  } catch (err) {
+    return next(err);
   }
 };
 
-const getUserById =  (req, res, next) => {
-      const  id= req.params.id 
-    if (id > users.length || id <= 0) return res.status(404).send(`User with ID ${id} does not exist`);
+const getUser = async (req, res, next) => {
+  try {
+    const result = await Users.find({});
 
-    for (var i = 0; i < users.length; i++) {
-      if(users[i].id == id){
-          return res.status(200).json({message:`User ${id} retrieved successfully`, users:users[i] })
+    return successResponse(res, 200, 'User retrieved successfully', result);
+  } catch (err) {
+    return next(err);
+  }
+};
 
-      }
+const getUserByName = async (req, res, next) => {
+  try {
+  const username = req.params.username;
+    const result = await Users.find({username:username}).exec();
+    // MyModel.find({ name: 'john', age: { $gte: 18 }}, function (err, docs) {});
+    //await MyModel.find({ name: 'john', age: { $gte: 18 } }).exec();
+
+    //Adventure.findOne({ country: 'Croatia' }, function (err, adventure) {});
+    //await Adventure.findOne({ country: 'Croatia' }).exec();
+
+
+    return successResponse(res, 200, `User ${username} retrieved successfully`, result);
+  } catch (err) {
+    return next(err);
   }
 };
 
 
-const updateUserByName =  (req, res, next) => {
-  let updated;
-  let found = users.find(function (user) {
-      return user.username === req.body.username;
-  });
-  if (found) {
-      updated = {
-          id: req.params.id, 
-          username: req.body.username, 
-          password: req.body.password,
-          email: req.body.email
+const getUserById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const result = await Users.findOne({_id:id});
 
-      };
-      let targetIndex = users.indexOf(found);
-      users.splice(targetIndex, 1, updated);
+    return successResponse(res, 200, `Users ${id} retrieved successfully`, result);
+  } catch (err) {
+    return next(err);
+  }
+};
 
-      res.status(200).send(users);
-  } else {
-      res.status(404).send("The user you are trying to update does not exist");
+const updateUserByName = async (req, res, next) => {
+  try {
+  const username = req.params.username;
+    const data = req.body;
+
+    const result = await Users.findOneAndUpdate({username:username}, data);
+    return successResponse(res, 200, `User updated successfully`, result);
+  } catch (err) {
+    return next(err);
   }
 };
 
 
+const updateUserById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const data = req.body;
+    const username = req.body.username
+    const email = req.body.email    
 
-const updateUserById =  (req, res, next) => {
-  const  id= req.params.id 
-    
-    const { username, email, password} = req.body;
-    if (id > users.length || id <= 0) return res.status(404).send(`User with ID ${id} does not exist`);
-    
-    if (!username || !email || !password) 
-    return res.send("You must supply for the following: 'username', 'email' or 'password'");
+    // Check if the details already exist for another user
+    const user = await Users.findOne({username, email});
+    if (user && user._id != id) return errorResponse(res, 409, 'Email or username already taken'); 
 
-    for (var i = 0; i < users.length; i++) {
-        if(users[i].id == id){
-          users[i].username = username;
-          users[i].email = email;
-          users[i].password = password;
-        }
-    }
+    const result = await Users.findByIdAndUpdate({_id:id}, data);
 
-    return res.status(200).json({message:"User updated successfully", users});
-};
-
-
-
-
-const deleteUserByName = (req, res, next) => {
-  let found = users.find(user => {
-      return user.username === req.body.username;
-  });
-  if (found) {
-      let targetIndex = users.indexOf(found);
-      users.splice(targetIndex, 1);
-      res.status(200).send("The user has been deleted");
-  }else{ 
-      res.status(404).send("The user with the username " + req.body.username + " was not found");
+    return successResponse(res, 200, `User updated successfully`, result);
+  } catch (err) {
+    return next(err);
   }
 };
 
+const deleteUserByName = async (req, res, next) => {
+  try {
+  const username = req.params.username;
+    const result = await Users.findOneAndDelete({username:username});
 
+    if (!result) return errorResponse(res, 404, 'User does not exist or has been deleted'); 
+    return successResponse(res, 200, `User deleted successfully`);
+  } catch (err) {
+    return next(err);
+  }
+};  
+   
+const deleteUserById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const result = await Users.findByIdAndDelete({_id:id});
+    if (!result) return errorResponse(res, 404, 'User does not exist or has been deleted'); 
 
-const deleteUserById = (req, res, next) => {
-  const  id= req.params.id 
-    if (id > users.length || id <= 0) return res.status(404).send(`User with ID ${id} does not exist`);
-
-    for (var i = 0; i < users.length; i++) {
-      if(users[i].id == id){
-        users.splice(i, 1);
-        return res.status(200).json({message:`User with ID ${id} deleted successfully`, users});
-      }
-    }
+    return successResponse(res, 200, `User deleted successfully`);
+  } catch (err) {
+    return next(err);
+  }
 };
-
 
 module.exports = { 
-getUser, createUser,getUserByName,updateUserByName, deleteUserByName,
-getUserById,updateUserById, deleteUserById
-};
-
+  getUser, createUser,getUserByName,updateUserByName, deleteUserByName,
+  getUserById,updateUserById, deleteUserById
+  };
+  

@@ -1,131 +1,102 @@
+const Movies = require('../models/movies');
+const { successResponse, errorResponse } = require( '../utils/response');
 
-let movies = require('../database/movies.json');
+const createMovie = async (req, res, next) => {
+  try {
+    const data = req.body;
 
+    const result = await Movies.create(data);    
+    return successResponse(res, 201, 'Account created successfully', result);
+  } catch (err) {
+    return next(err);
+  }
+};
 
-const createMovie = (req, res, next) => {
-  let index = movies.length;
-  const movie = { 
-      // id:req.params.id,
-    "id": index + 1,
-      title: req.body.title,
-      actor: req.body.actor,
-      producer: req.body.producer,
-      rating: req.body.rating
+const getMovies = async (req, res, next) => {
+  try{
+    const result = await Movies.find({});
 
+    return successResponse(res, 200, 'Movies retrieved successfully', result);
+  }catch(err){
+    console.log(err)
+    return next(err)
+}
+};
+
+const getMovieByTitle = async (req, res, next) => {
+  try {
+    const title = req.params.title;
+      const result = await Users.findOne({title:title});
+  
+      return successResponse(res, 200, `Users ${title} retrieved successfully`, result);
+    } catch (err) {
+      return next(err);
+    }
   };
-  movies.push(movie);
-  res.status(201).send(movies);
-};
+   
+    
+    
+const getMovieById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const result = await Movies.findOne({_id:id});
 
-
-const getMovies = (req, res, next) => {
-  res.send(movies); 
-};
-
-
-const getMovieByTitle = (req, res, next) => {
-  const title = req.body.title;
-  const movie = movies.filter(movie => movie.title === title);
-
-  if(movie.length == 0) {
-      return res.status(404).send("No movie was found with this title");    
+    return successResponse(res, 200, `Movie ${id} retrieved successfully`, result);
+  } catch (err) {
+    return next(err);
   }
-  res.status(200).json(movie);
 };
 
-
-
-const getMovieById = (req, res, next) => {
-  const  id= req.params.id 
-  if (id > movies.length || id <= 0) return res.status(404).send(`Movie with ID ${id} does not exist`);
-
-  for (var i = 0; i < movies.length; i++) {
-    if(movies[i].id == id){
-        return res.status(200).json({message:`Movie ${req.params.id} retrieved successfully`, movies:movies[i] });
+const updateMovieByTitle = async (req, res, next) => {
+  try {
+    const title = req.params.title;
+      const data = req.body;
+  
+      const result = await Users.findOneAndUpdate({title:title}, data);
+      return successResponse(res, 200, `title updated successfully`, result);
+    } catch (err) {
+      return next(err);
     }
+  };
+
+const updateMovieById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const data = req.body;
+    const result = await Movies.findByIdAndUpdate({_id:id}, data);
+
+    return successResponse(res, 200, `Movie updated successfully`, result);
+  } catch (err) {
+    return next(err);
   }
 };
 
+const deleteMovieByTitle = async (req, res, next) => {
+  try {
+  const title = req.params.title;
+    const result = await Users.findOneAndDelete({title:title});
 
-const updateMovieByTitle = (req, res, next) => {
-  let updated;
-  let found = movies.find(function (movie) {
-      return movie.title === req.body.title;
-  });
-  if (found) {
-      updated = {
-        id:req.params.id,
-          title: req.body.title,
-          actor: req.body.actor,
-          producer: req.body.producer,
-          rating: req.body.rating
-      };
+    if (!result) return errorResponse(res, 404, 'title does not exist or has been deleted'); 
+    return successResponse(res, 200, `title deleted successfully`);
+  } catch (err) {
+    return next(err);
+  }
+};  
 
-      let targetIndex = movies.indexOf(found);
-      movies.splice(targetIndex, 1, updated);
 
-      res.status(200).send(movies);
-  } else {
-      res.status(404).send("The movie you are trying to update does not exist");
+const deleteMovieById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const result = await Movies.findByIdAndDelete({_id:id});
+    if (!result) return errorResponse(res, 404, 'Movie does not exist or has been deleted'); 
+
+    return successResponse(res, 200, `Movie deleted successfully`);
+  } catch (err) {
+    return next(err);
   }
 };
-
-
-
-const updateMovieById = (req, res, next) => {
-  const  id= req.params.id 
-    const {title,actor,producer,rating} = req.body;
-
-  if (id > movies.length || id <= 0) return res.status(404).send(`Movie with ID ${id} does not exist`);
-
-  if (!title||!actor||!producer||!rating) 
-  return res.send("You must supply for the following:'username','password','title','actor','producer','rating'");
-
-  for (var i = 0; i < movies.length; i++) {
-      if(movies[i].id == id){
-          movies[i].title = title;
-          movies[i].actor = actor;
-          movies[i].producer = producer;
-          movies[i].rating = rating;
-      }
-  }
-
-  return res.status(200).json({message:"Movie updated successfully", movies});
-};
-
-
-const deleteMovieByTitle = (req, res, next) => {
-  let found = movies.find(movie => {
-      return movie.title === req.body.title;
-  });
-  if (found) {
-      let targetIndex = movies.indexOf(found);
-      movies.splice(targetIndex, 1);
-      res.status(200).send("The movie has been deleted");
-  }
-  else{ 
-      res.status(404).send("The movie with the title " + req.body.title + " was not found");
-  }
-};
-
-
-
-const deleteMovieById = (req, res, next) => {
-  const  id= req.params.id 
-  if (id > movies.length || id <= 0) return res.status(404).send(`Movie with ID ${id} does not exist`);
-
-  for (var i = 0; i < movies.length; i++) {
-    if(movies[i].id == id){
-      movies.splice(i, 1);
-      return res.status(200).json({message:"Movie deleted successfully", movies});
-    }
-  }
-};
-
 
 module.exports = { 
-    createMovie, getMovies, getMovieByTitle,updateMovieByTitle, deleteMovieByTitle,
-    getMovieById, updateMovieById, deleteMovieById
-  };
-
-
+  createMovie, getMovies, getMovieByTitle,updateMovieByTitle, deleteMovieByTitle,
+  getMovieById, updateMovieById, deleteMovieById
+};

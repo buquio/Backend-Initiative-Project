@@ -1,137 +1,102 @@
+const Rentals = require('../models/rentals');
+const { successResponse, errorResponse } = require( '../utils/response');
 
-let rentals = require('../database/rentals.json');
+const createRental = async (req, res, next) => {
+  try {
+    const data = req.body;
 
+    const result = await Rentals.create(data);    
+    return successResponse(res, 201, 'Rental created successfully', result);
+  } catch (err) {
+    return next(err);
+  }
+};
 
-const createRental = (req, res, next) => {
-  let index = rentals.length;
+const getRental = async (req, res, next) => {
+  try {
+    const result = await Rentals.find({});
 
-  const rental = { 
-    // id:req.params.id,
-    "id": index + 1,
-    username: req.body.username, 
-    receiptNumber: req.body.receiptNumber, 
-    orderNumber: req.body.orderNumber,
-    movieTitles: req.body.movieTitles,
-    rentDate: req.body.rentDate,
-    returnDate: req.body.returnDate
-  };
-  rentals.push(rental);
-  res.status(201).send(rentals);
-  };
+    return successResponse(res, 200, 'Rentals retrieved successfully', result);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const getRentalByName = async (req, res, next) => {
+  try {
+  const username = req.params.username;
+    const result = await Users.findOne({_username:username});
+
+    return successResponse(res, 200, `RentalUser ${username} retrieved successfully`, result);
+  } catch (err) {
+    return next(err);
+  }
+};
+
   
 
+const getRentalById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const result = await Rentals.findOne({_id:id});
 
-const getRental = (req, res, next) => {
-  res.send(rentals);  
-};
-
-
-const getRentalByName = (req, res, next) => {
-  const username = req.body.username;
-  const rentalUser = rentals.filter(rental => rental.username === username);
-  if(!rentalUser) {
-      return res.send("User has no rental");    
+    return successResponse(res, 200, `Rentals ${id} retrieved successfully`, result);
+  } catch (err) {
+    return next(err);
   }
-  res.json(rentalUser);
 };
+
+const updateRentalByName = async (req, res, next) => {
+  try {
+  const username = req.params.username;
+    const data = req.body;
+
+    const result = await Users.findOneAndUpdate({username:username}, data);
+    return successResponse(res, 200, `RentalUser updated successfully`, result);
+  } catch (err) {
+    return next(err);
+  }
+};
+ 
   
+const updateRentalById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const data = req.body;
+    const result = await Rentals.findByIdAndUpdate({_id:id}, data);
 
-const getRentalById = (req, res, next) => {
-  const  id= req.params.id 
-  if (id > rentals.length || id <= 0) return res.status(404).send(`Rental with ID ${id} does not exist`);
-
-  for (var i = 0; i < rentals.length; i++) {
-    if(rentals[i].id == id){
-        return res.status(200).json({message:`Rental ${req.params.id} retrieved successfully`, rentals:rentals[i] })
-    }
-}
-};
-
-
-
-const updateRentalByName =  (req, res, next) => {
-let updated;
-let found = users.find(function (user) {
-  return user.username === req.body.username;
-});
-if (found) {
-  updated = {
-  id:req.params.id,
-  username: req.body.username, 
-  receiptNumber: req.body.receiptNumber, 
-  orderNumber: req.body.orderNumber,
-  movieTitle: req.body.movieTitle,
-  rentDate: req.body.rentDate,
-  returnDate: req.body.returnDate
-  };
-
-  let targetIndex = rentals.indexOf(found);
-  rentals.splice(targetIndex, 1, updated);
-
-  res.status(200).send(rentals);
-} else {
-  res.status(404).send("The user you are trying to update does not exist");
-}
-};
-
-
-
-const updateRentalById =  (req, res, next) => {
-  const  id= req.params.id 
-  const {username,receiptNumber,orderNumber,movieTitle,rentDate,returnDate} = req.body;
-  if (id > rentals.length || id <= 0) return res.status(404).send(`Rental with ID ${id} does not exist`);
-
-  if (!username||!receiptNumber||!orderNumber||!movieTitle||!rentDate||!returnDate) 
-  return res.send("You must supply for the following:username,receiptNumber,orderNumber,movieTitle,rentDate,returnDate");
-
-  for (var i = 0; i < rentals.length; i++) {
-      if(rentals[i].id == id){
-          rentals[i].username = username;
-          rentals[i].receiptNumber = receiptNumber;
-          rentals[i]. orderNumber =  orderNumber;
-          rentals[i].movieTitle = movieTitle;
-          rentals[i].rentDate = rentDate;
-          rentals[i].returnDate = returnDate;
-      }
-  }
-
-  return res.status(200).json({message:"Rental updated successfully", rentals});
-};
-
-
-
-
-const deleteRentalByName = (req, res, next) => {
-let found = rentals.find(user => {
-  return user.username === req.body.username;
-});
-if (found) {
-  let targetIndex = rentals.indexOf(found);
-  rentals.splice(targetIndex, 1);
-  res.status(200).send("The rental with the username has been deleted");
-}else{ 
-  res.status(404).send("The rental with the username " + req.body.username + " was not found");
-}
-};
-
-
-const deleteRentalById = (req, res, next) => {
-  const  id= req.params.id;
-  if (id > rentals.length || id <= 0) return res.status(404).send(`Rental with ID ${id} does not exist`);
-
-  for (var i = 0; i < rentals.length; i++) {
-    if(rentals[i].id == id){
-      rentals.splice(i, 1);
-      return res.status(200).json({message:`Rental with ID ${id} deleted successfully`, rentals});
-    }
+    return successResponse(res, 200, `Rental updated successfully`, result);
+  } catch (err) {
+    return next(err);
   }
 };
 
+const deleteRentalByName = async (req, res, next) => {
+  try {
+  const username = req.params.username;
+    const result = await Users.findOneAndDelete({username:username});
+
+    if (!result) return errorResponse(res, 404, 'RentalUser does not exist or has been deleted'); 
+    return successResponse(res, 200, `RentalUser deleted successfully`);
+  } catch (err) {
+    return next(err);
+  }
+};  
+  
+  
+const deleteRentalById = async (req, res, next) => {
+  try {
+    const {id}= req.params;
+    const result = await Rentals.findByIdAndDelete({_id:id});
+    if (!result) return errorResponse(res, 404, 'Rental does not exist or has been deleted'); 
+
+    return successResponse(res, 200, `Rental deleted successfully`);
+  } catch (err) {
+    return next(err);
+  }
+};
 
 module.exports = { 
-    createRental, getRental, getRentalByName, updateRentalByName, deleteRentalByName,
-    getRentalById, updateRentalById, deleteRentalById
+  createRental, getRental, getRentalByName, updateRentalByName, deleteRentalByName,
+  getRentalById, updateRentalById, deleteRentalById
 };
-
-
-
