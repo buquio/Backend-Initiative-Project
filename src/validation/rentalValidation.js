@@ -9,8 +9,8 @@ const createRental = (req, res, next) =>{
       receiptNumber:Format.number, 
       orderNumber:Format.number,
       movieTitle:Format.string, 
-      rentDate: Format.date,
-      returnDate: Format.date,
+      rentDate: Format.date,//added
+      returnDate: Format.date,//added
     },
     {}
   );     
@@ -25,8 +25,8 @@ const updateRentalById = (req, res, next) =>{
       receiptNumber:Format.number, 
       orderNumber:Format.number,
       movieTitle:Format.stringOptional, 
-      rentDate: Format.date,
-      returnDate: Format.date,
+      rentDate: Format.date,//added
+      returnDate: Format.date,//added
     },
     {}
   );     
@@ -42,8 +42,8 @@ const updateRentalByName = (req, res, next) =>{
       receiptNumber:Format.number, 
       orderNumber:Format.number,
       movieTitle:Format.stringOptional, 
-      rentDate: Format.date,
-      returnDate: Format.date,
+      rentDate: Format.date, //added
+      returnDate: Format.date,//added
     },
     {}
   );     

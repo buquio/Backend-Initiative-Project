@@ -8,7 +8,7 @@ const createMovie = (req, res, next) =>{
     title: Format.string,
     actor: Format.string,
     producer : Format.string,
-    rating:Format.number
+    rating: Format.number,
 
     },
     {}
@@ -23,7 +23,7 @@ const updateMovieById = (req, res, next) =>{
     title: Format.stringOptional,
     actor: Format.stringOptional,
     producer : Format.stringOptional,
-    rating: Format.number, 
+    rating: Format.number,
     },
     {}
   );     

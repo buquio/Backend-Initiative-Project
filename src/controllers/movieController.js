@@ -6,7 +6,7 @@ const createMovie = async (req, res, next) => {
     const data = req.body;
 
     const result = await Movies.create(data);    
-    return successResponse(res, 201, 'Account created successfully', result);
+    return successResponse(res, 201, 'Movie created successfully', result);
   } catch (err) {
     return next(err);
   }
