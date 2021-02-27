@@ -1,3 +1,5 @@
+//global errorResponse & successResponse
+
 const errorResponse = (res, code, message) => {
     res.status(code).json({
       status: false,

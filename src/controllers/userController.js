@@ -10,6 +10,7 @@ const createUser = async (req, res, next) => {
     if (user) return errorResponse(res, 409, 'User already exists'); 
 
 
+    // create an object of new Item & push to database
     const result = await Users.create(data);    
     return successResponse(res, 201, 'User created successfully', result);
   } catch (err) {
@@ -17,6 +18,7 @@ const createUser = async (req, res, next) => {
   }
 };
 
+// this returns all user
 const getUser = async (req, res, next) => {
   try {
     const result = await Users.find({});
@@ -30,14 +32,8 @@ const getUser = async (req, res, next) => {
 const getUserByName = async (req, res, next) => {
   try {
   const username = req.params.username;
-    const result = await Users.find({username:username}).exec();
-    // MyModel.find({ name: 'john', age: { $gte: 18 }}, function (err, docs) {});
-    //await MyModel.find({ name: 'john', age: { $gte: 18 } }).exec();
-
-    //Adventure.findOne({ country: 'Croatia' }, function (err, adventure) {});
-    //await Adventure.findOne({ country: 'Croatia' }).exec();
-
-
+    // const result = await Users.findOne({_username:username});
+    const result = await Users.findOne({username:username}).exec();
     return successResponse(res, 200, `User ${username} retrieved successfully`, result);
   } catch (err) {
     return next(err);
@@ -49,6 +45,8 @@ const getUserById = async (req, res, next) => {
   try {
     const {id}= req.params;
     const result = await Users.findOne({_id:id});
+    // const result = await Users.findById({_id:id});
+    // const result = await Users.find({_id:id});
 
     return successResponse(res, 200, `Users ${id} retrieved successfully`, result);
   } catch (err) {

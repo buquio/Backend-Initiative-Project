@@ -1,3 +1,4 @@
+//general schema validation
 const Joi = require('joi');
 
 module.exports= {
@@ -19,6 +20,6 @@ module.exports= {
   stringOptional: Joi.string().trim().min(1).optional(),
   number: Joi.number().min(0),
   numberOptional: Joi.number().min(0).optional(),
-  date: Joi.date().required() //added
+  date: Joi.date().required() 
 
 };

@@ -7,6 +7,7 @@ dotenv.config();
 const app = express();
 const mongoose = require("mongoose");
 
+// import from `routes` folder 
 const userRoutes = require('./routes/userRoutes');
 const movieRoutes = require('./routes/movieRoutes')
 const rentalRoutes = require('./routes/rentalRoutes')

@@ -12,6 +12,7 @@ const createRental = async (req, res, next) => {
   }
 };
 
+//get all rentals
 const getRental = async (req, res, next) => {
   try {
     const result = await Rentals.find({});
@@ -25,7 +26,8 @@ const getRental = async (req, res, next) => {
 const getRentalByName = async (req, res, next) => {
   try {
   const username = req.params.username;
-    const result = await Users.findOne({_username:username});
+    const result = await Rentals.findOne({username:username});
+    // const result = await Rentals.findOne({username:username}).exec();
 
     return successResponse(res, 200, `RentalUser ${username} retrieved successfully`, result);
   } catch (err) {
@@ -51,7 +53,7 @@ const updateRentalByName = async (req, res, next) => {
   const username = req.params.username;
     const data = req.body;
 
-    const result = await Users.findOneAndUpdate({username:username}, data);
+    const result = await Rentals.findOneAndUpdate({username:username}, data);
     return successResponse(res, 200, `RentalUser updated successfully`, result);
   } catch (err) {
     return next(err);
@@ -74,7 +76,7 @@ const updateRentalById = async (req, res, next) => {
 const deleteRentalByName = async (req, res, next) => {
   try {
   const username = req.params.username;
-    const result = await Users.findOneAndDelete({username:username});
+    const result = await Rentals.findOneAndDelete({username:username});
 
     if (!result) return errorResponse(res, 404, 'RentalUser does not exist or has been deleted'); 
     return successResponse(res, 200, `RentalUser deleted successfully`);

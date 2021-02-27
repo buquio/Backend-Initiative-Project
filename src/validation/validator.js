@@ -1,4 +1,5 @@
-  
+ 
+ //extra validation specifications on users,rentel&movie
 require('joi');
 const { errorResponse } = require( '../utils/response');
 

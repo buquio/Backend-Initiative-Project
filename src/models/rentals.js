@@ -6,8 +6,8 @@ const rentalSchema = new mongoose.Schema(
       receiptNumber: { type: Number, required: true},
       orderNumber: { type: Number, required: true},
       movieTitle: { type: String, required: true },
-      rentDate: { type: Date, required: true}, //added
-      returnDate: { type: Date, required: true} //added
+      rentDate: { type: Date, required: true}, 
+      returnDate: { type: Date, required: true} 
   },
   { timestamps: true }
 );
